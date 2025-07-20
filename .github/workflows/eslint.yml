@@ -1,0 +1,29 @@
+name: Eslint
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'The Node.js version to use.'
+        required: true
+        type: string
+
+jobs:
+  lint:
+    name: Eslint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run tests
+        run: npx eslint .

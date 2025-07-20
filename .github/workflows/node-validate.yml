@@ -1,0 +1,32 @@
+name: Node Validate
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'The Node.js version to use.'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    name: Validate Node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Run Unit tests
+        run: npm run test
