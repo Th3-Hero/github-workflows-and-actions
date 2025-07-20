@@ -1,0 +1,77 @@
+name: Setup Java
+description: Setup a Java environment with access to a private repository
+
+inputs:
+  cache:
+    description: 'Name of the build platform to cache dependencies. It can be "maven", "gradle" or "sbt".'
+    required: false
+  java-version:
+    description: 'The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file'
+    required: false
+  private-maven-proxy-repository:
+    description: 'Name of the proxy repository for providing Maven dependencies'
+    required: true
+  private-maven-token:
+    description: 'Token for authenticating to the private Maven repository'
+    required: true
+  private-maven-user:
+    description: 'User to authenticate to the private Maven repository with'
+    required: true
+  private-release-repository:
+    description: 'Name of the repository for publishing internal Maven releases'
+    required: false
+  private-server-base:
+    description: 'Base url for pointing to private Maven repositories'
+    required: true
+  private-snapshot-repository:
+    description: 'Name of the repository for publishing internal Maven snapshots'
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Configure Java
+      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # 4.7.1
+      with:
+        cache: ${{ inputs.cache }}
+        distribution: 'temurin'
+        java-version: ${{ inputs.java-version }}
+    - name: Generate settings.xml
+      shell: bash
+      run: |
+        cat <<EOF > ${HOME}/.m2/settings.xml
+        <settings>
+          <servers>
+            <server>
+              <id>remote</id>
+              <username>${{ inputs.private-maven-user }}</username>
+              <password>${{ inputs.private-maven-token }}</password>
+            </server>
+          </servers>
+          <profiles>
+            <profile>
+              <id>remote-repository</id>
+              <repositories>
+                <repository>
+                  <id>remote</id>
+                  <name>Remote Repository</name>
+                  <url>${{ inputs.private-server-base }}/${{ inputs.private-maven-proxy-repository }}/</url>
+                  <releases>
+                    <enabled>true</enabled>
+                  </releases>
+                  <snapshots>
+                    <enabled>false</enabled>
+                  </snapshots>
+                </repository>
+              </repositories>
+              <properties>
+                <altSnapshotDeploymentRepository>remote::${{ inputs.private-server-base }}/${{ inputs.private-snapshot-repository }}/</altSnapshotDeploymentRepository>
+                <altReleaseDeploymentRepository>remote::${{ inputs.private-server-base }}/${{ inputs.private-release-repository }}/</altReleaseDeploymentRepository>
+              </properties>
+            </profile>
+          </profiles>
+          <activeProfiles>
+            <activeProfile>remote-repository</activeProfile>
+          </activeProfiles>
+        </settings>
+        EOF

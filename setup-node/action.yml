@@ -1,0 +1,35 @@
+name: Setup Node
+description: Setup a Node environment with access to a private registry
+
+inputs:
+  cache:
+    description: 'Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm'
+    required: false
+  node-version:
+    description: 'Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0'
+    required: false
+  private-npm-registry:
+    description: 'Full URL of the private NPM registry to use'
+    required: true
+  private-npm-token:
+    description: 'Token for authenticating to the private NPM registry'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure Node
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # 4.4.0
+      with:
+        cache: ${{ inputs.cache }}
+        node-version: ${{ inputs.node-version }}
+    - name: Generate npmrc
+      shell: bash
+      run: |
+        PREFIX="https:"
+        REGISTRY="${{ inputs.private-npm-registry }}"
+        
+        cat <<EOF > ${HOME}/.npmrc
+        @k-seth:registry=${REGISTRY}
+        ${REGISTRY#"$PREFIX"}:_authToken=${{ inputs.private-npm-token }}
+        EOF

@@ -1,0 +1,54 @@
+name: Validate Maven Project
+
+on:
+  workflow_call:
+    inputs:
+      additional-profiles:
+        description: 'Comma-separated string of additional profiles to set when running tests'
+        required: false
+        type: string
+      java-version:
+        description: 'The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file'
+        required: false
+        type: string
+      private-maven-proxy-repository:
+        description: 'Full URL of the private Maven repository to use'
+        required: true
+        type: string
+      private-maven-user:
+        description: 'User to authenticate to the private Maven repository with'
+        required: true
+        type: string
+      private-server-base:
+        description: 'Base url for pointing to private Maven repositories'
+        required: true
+        type: string
+    secrets:
+      private-maven-token:
+        description: 'Token for authenticating to the private Maven repository'
+        required: true
+      sonar-token:
+        description: 'Token for authenticating to SonarCloud'
+        required: true
+
+jobs:
+  validate:
+    name: Validate Maven
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - name: Setup Java
+        uses: Th3-Hero/github-workflows-and-actions/setup-java@main
+        with:
+          cache: 'maven'
+          java-version: ${{ inputs.java-version }}
+          private-maven-proxy-repository: ${{ inputs.private-maven-proxy-repository }}
+          private-maven-token: ${{ secrets.private-maven-token }}
+          private-maven-user: ${{ inputs.private-maven-user }}
+          private-server-base: ${{ inputs.private-server-base }}
+      - name: Validate project
+        uses: Th3-Hero/github-workflows-and-actions/validate-maven@main
+        with:
+          additional-profiles: ${{ inputs.additional-profiles }}
+          sonar-token: ${{ secrets.sonar-token }}

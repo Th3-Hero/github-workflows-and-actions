@@ -1,0 +1,73 @@
+name: Release Maven project
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        description: 'The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file'
+        required: false
+        type: string
+      private-maven-proxy-repository:
+        description: 'Full URL of the private Maven repository to use'
+        required: true
+        type: string
+      private-maven-user:
+        description: 'User to authenticate to the private Maven repository with'
+        required: true
+        type: string
+      private-npm-registry:
+        description: 'Full URL of the private NPM registry to use'
+        required: true
+        type: string
+      private-release-repository:
+        description: 'Name of the repository for publishing internal Maven releases'
+        required: true
+        type: string
+      private-server-base:
+        description: 'Base url for pointing to private Maven repositories'
+        required: true
+        type: string
+      private-snapshot-repository:
+        description: 'Name of the repository for publishing internal Maven snapshots'
+        required: true
+        type: string
+    secrets:
+      github-token:
+        description: 'Token for authenticating to GitHub'
+        required: true
+      private-maven-token:
+        description: 'Token for authenticating to the private Maven repository'
+        required: true
+      private-npm-token:
+        description: 'Token for authenticating to the private NPM registry'
+        required: true
+
+jobs:
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - name: Setup Java
+        uses: Th3-Hero/github-workflows-and-actions/setup-java@main
+        with:
+          cache: 'maven'
+          java-version: ${{ inputs.java-version }}
+          private-maven-proxy-repository: ${{ inputs.private-maven-proxy-repository }}
+          private-maven-token: ${{ secrets.private-maven-token }}
+          private-maven-user: ${{ inputs.private-maven-user }}
+          private-release-repository: ${{ inputs.private-release-repository }}
+          private-server-base: ${{ inputs.private-server-base }}
+          private-snapshot-repository: ${{ inputs.private-snapshot-repository }}
+      - name: Setup Node
+        uses: Th3-Hero/github-workflows-and-actions/setup-node@main
+        with:
+          node-version: 'lts/*'
+          private-npm-registry: ${{ inputs.private-npm-registry }}
+          private-npm-token: ${{ secrets.private-npm-token }}
+      - name: Release
+        uses: Th3-Hero/github-workflows-and-actions/semantic-release@main
+        with:
+          github-token: ${{ secrets.github-token }}
+          release-config: '@k-seth/semantic-release-maven'
