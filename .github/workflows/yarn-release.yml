@@ -1,0 +1,44 @@
+name: Release Yarn project
+
+on:
+  workflow_call:
+    inputs:
+      cache:
+        description: 'Cache type to use for the Node.js setup.'
+        required: false
+        type: string
+      node-version:
+        description: 'The Node.js version to use.'
+        required: true
+        type: string
+      private-npm-registry:
+        description: 'Full URL of the private NPM registry to use'
+        required: true
+        type: string
+    secrets:
+      github-token:
+        description: 'Token for authenticating to GitHub'
+        required: true
+      private-npm-token:
+        description: 'Token for authenticating to the private NPM registry'
+        required: true
+
+jobs:
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - name: Setup Node
+        uses: Th3-Hero/github-workflows-and-actions/setup-node@main
+        with:
+          cache: ${{ inputs.cache }}
+          node-version: ${{ inputs.node-version }}
+          private-npm-registry: ${{ inputs.private-npm-registry }}
+          private-npm-token: ${{ secrets.private-npm-token }}
+      - name: Release
+        uses: Th3-Hero/github-workflows-and-actions/semantic-release@main
+        with:
+          github-token: ${{ secrets.github-token }}
+          release-config: '@th3-hero/semantic-release-yarn'

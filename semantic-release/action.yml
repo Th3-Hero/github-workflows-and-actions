@@ -29,10 +29,10 @@ runs:
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
-        GIT_AUTHOR_NAME: k-seth-releaser
-        GIT_AUTHOR_EMAIL: 219573145+k-seth-releaser@users.noreply.github.com
-        GIT_COMMITTER_NAME: k-seth-releaser
-        GIT_COMMITTER_EMAIL: 219573145+k-seth-releaser@users.noreply.github.com
+        GIT_AUTHOR_NAME: th3-hero-releaser
+        GIT_AUTHOR_EMAIL: th3-hero-releaser@users.noreply.github.com
+        GIT_COMMITTER_NAME: th3-hero-releaser
+        GIT_COMMITTER_EMAIL: th3-hero-releaser@users.noreply.github.com
       run: |
         npm install --no-save semantic-release ${{ inputs.release-config }} ${{ inputs.additional-plugins }}
         npx --no semantic-release
