@@ -42,6 +42,11 @@ jobs:
           private-npm-registry: ${{ inputs.private-npm-registry }}
           private-npm-token: ${{ secrets.private-npm-token }}
           scope: ${{ inputs.scope }}
+      - name: Setup Yarn 2+
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+          yarn --version
       - name: Release
         uses: Th3-Hero/github-workflows-and-actions/semantic-release@main
         with:
