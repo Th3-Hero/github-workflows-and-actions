@@ -15,10 +15,6 @@ on:
         description: 'Full URL of the private NPM registry to use'
         required: true
         type: string
-      scope:
-        description: 'Scope to use for the private NPM registry.'
-        required: true
-        type: string
     secrets:
       github-token:
         description: 'Token for authenticating to GitHub'
@@ -41,7 +37,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
           private-npm-registry: ${{ inputs.private-npm-registry }}
           private-npm-token: ${{ secrets.private-npm-token }}
-          scope: ${{ inputs.scope }}
+          scope: '@th3-hero'
       - name: Setup Yarn 2+
         run: |
           corepack enable
