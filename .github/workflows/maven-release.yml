@@ -31,6 +31,10 @@ on:
         description: 'Name of the repository for publishing internal Maven snapshots'
         required: true
         type: string
+      scope:
+        description: 'Scope to use for the private NPM registry.'
+        required: true
+        type: string
     secrets:
       github-token:
         description: 'Token for authenticating to GitHub'
@@ -66,6 +70,7 @@ jobs:
           node-version: 'lts/*'
           private-npm-registry: ${{ inputs.private-npm-registry }}
           private-npm-token: ${{ secrets.private-npm-token }}
+          scope: ${{ inputs.scope }}
       - name: Release
         uses: Th3-Hero/github-workflows-and-actions/semantic-release@main
         with:

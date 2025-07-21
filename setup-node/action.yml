@@ -14,6 +14,9 @@ inputs:
   private-npm-token:
     description: 'Token for authenticating to the private NPM registry'
     required: true
+  scope:
+    description: 'Scope to use for the private NPM registry.'
+    required: true
 
 runs:
   using: composite
@@ -30,6 +33,6 @@ runs:
         REGISTRY="${{ inputs.private-npm-registry }}"
         
         cat <<EOF > ${HOME}/.npmrc
-        @k-seth:registry=${REGISTRY}
+        ${{ inputs.scope }}:registry=${REGISTRY}
         ${REGISTRY#"$PREFIX"}:_authToken=${{ inputs.private-npm-token }}
         EOF
