@@ -1,10 +1,11 @@
-name: Release Maven project
+# Made for releasing a Maven library project using Semantic Release. Creates a release and publishes it to a private Maven repository.
+name: Release Library Maven project
 
 on:
   workflow_call:
     inputs:
       java-version:
-        description: 'The Java version to set up.'
+        description: 'The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file'
         required: false
         type: string
       private-maven-proxy-repository:
@@ -19,8 +20,16 @@ on:
         description: 'Full URL of the private NPM registry to use'
         required: true
         type: string
+      private-release-repository:
+        description: 'Name of the repository for publishing internal Maven releases'
+        required: true
+        type: string
       private-server-base:
         description: 'Base url for pointing to private Maven repositories'
+        required: true
+        type: string
+      private-snapshot-repository:
+        description: 'Name of the repository for publishing internal Maven snapshots'
         required: true
         type: string
     secrets:
@@ -36,7 +45,7 @@ on:
 
 jobs:
   release:
-    name: Deploy Release
+    name: Semantic Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -49,16 +58,18 @@ jobs:
           private-maven-proxy-repository: ${{ inputs.private-maven-proxy-repository }}
           private-maven-token: ${{ secrets.private-maven-token }}
           private-maven-user: ${{ inputs.private-maven-user }}
+          private-release-repository: ${{ inputs.private-release-repository }}
           private-server-base: ${{ inputs.private-server-base }}
+          private-snapshot-repository: ${{ inputs.private-snapshot-repository }}
       - name: Setup Node
         uses: Th3-Hero/github-workflows-and-actions/setup-node@main
         with:
           node-version: 'lts/*'
           private-npm-registry: ${{ inputs.private-npm-registry }}
           private-npm-token: ${{ secrets.private-npm-token }}
-          scope: '@th3-hero'
+          scope: '@k-seth'
       - name: Release
-        uses: Th3-Hero/github-workflows-and-actions/semantic-release-manual@main
+        uses: Th3-Hero/github-workflows-and-actions/semantic-release@main
         with:
           github-token: ${{ secrets.github-token }}
-          release-config: '@th3-hero/semantic-release-maven'
+          release-config: '@k-seth/semantic-release-maven'
