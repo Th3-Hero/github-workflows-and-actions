@@ -1,13 +1,10 @@
 name: Validate Maven
-description: Build, verify and Sonar scan a Maven-based project
+description: Build and verify a Maven-based project
 
 inputs:
   additional-profiles:
     description: 'Comma-separated string of additional profiles to set when running tests'
     required: false
-  sonar-token:
-    description: 'Token for authenticating to SonarCloud'
-    required: true
 
 runs:
   using: composite
@@ -21,14 +18,3 @@ runs:
         fi
 
         mvn -B -fae -Dmaven.source.skip=true clean verify -P "${PROFILES}"
-    - name: Sonar scan
-      shell: bash
-      env:
-        SONAR_TOKEN: ${{ inputs.sonar-token }}
-      run: |
-        PROJECT_KEY=`echo '${project.groupId}:${project.artifactId}' | mvn -N -q -DforceStdout help:evaluate`
-
-        mvn -B -P sonar sonar:sonar -DskipTests=true \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=th3-hero \
-            -Dsonar.projectKey=${PROJECT_KEY}

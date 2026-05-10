@@ -1,0 +1,22 @@
+name: Sonar Scan Maven
+description: Sonar scan a Maven-based project
+
+inputs:
+  sonar-token:
+    description: 'Token for authenticating to SonarCloud'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Sonar scan
+      shell: bash
+      env:
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
+      run: |
+        PROJECT_KEY=`echo '${project.groupId}:${project.artifactId}' | mvn -N -q -DforceStdout help:evaluate`
+
+        mvn -B -P sonar sonar:sonar -DskipTests=true \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=th3-hero \
+            -Dsonar.projectKey=${PROJECT_KEY}
