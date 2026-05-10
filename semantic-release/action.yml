@@ -1,5 +1,5 @@
 name: Semantic release
-description: Release a project using the Semantic Release tool
+description: Changes the project version and creates a GitHub release using the Semantic Release tool
 
 inputs:
   additional-plugins:
