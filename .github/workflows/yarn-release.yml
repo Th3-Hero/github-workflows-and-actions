@@ -11,8 +11,12 @@ on:
         description: 'The Node.js version to use.'
         required: true
         type: string
+      prvate-server-base:
+        description: 'Base URL for pointing to private npm repositories'
+        required: true
+        type: string
       private-npm-registry:
-        description: 'Full URL of the private NPM registry to use'
+        description: 'Relative URL of the private NPM registry to use'
         required: true
         type: string
     secrets:
@@ -36,6 +40,7 @@ jobs:
           cache: ${{ inputs.cache }}
           node-version: ${{ inputs.node-version }}
           private-npm-registry: ${{ inputs.private-npm-registry }}
+          private-server-base: ${{ inputs.prvate-server-base }}
           private-npm-token: ${{ secrets.private-npm-token }}
           scope: '@th3-hero'
       - name: Setup Yarn 2+

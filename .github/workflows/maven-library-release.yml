@@ -65,6 +65,7 @@ jobs:
         uses: Th3-Hero/github-workflows-and-actions/setup-node@main
         with:
           node-version: 'lts/*'
+          private-server-base: ${{ inputs.private-server-base }}
           private-npm-registry: ${{ inputs.private-npm-registry }}
           private-npm-token: ${{ secrets.private-npm-token }}
           scope: '@k-seth'
