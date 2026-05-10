@@ -8,9 +8,6 @@ inputs:
   node-version:
     description: 'Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0'
     required: false
-  private-server-base:
-    description: 'Base url for pointing to private npm repositories'
-    required: true
   private-npm-registry:
     description: 'Relative URL of the private NPM registry to use'
     required: true
@@ -33,7 +30,7 @@ runs:
       shell: bash
       run: |
         PREFIX="https:"
-        REGISTRY="${{ inputs.private-server-base }}/${{ inputs.private-npm-registry }}"
+        REGISTRY="${{ inputs.private-npm-registry }}"
         
         cat <<EOF > ${HOME}/.npmrc
         ${{ inputs.scope }}:registry=${REGISTRY}
