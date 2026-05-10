@@ -36,11 +36,11 @@ on:
 
 jobs:
   release:
-    name: Deploy Release
+    name: Create Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
+        uses: Th3-Hero/github-workflows-and-actions/checkout@main
       - name: Setup Java
         uses: Th3-Hero/github-workflows-and-actions/setup-java@main
         with:
@@ -59,7 +59,7 @@ jobs:
           private-npm-token: ${{ secrets.private-npm-token }}
           scope: '@th3-hero'
       - name: Release
-        uses: Th3-Hero/github-workflows-and-actions/semantic-release-manual@main
+        uses: Th3-Hero/github-workflows-and-actions/semantic-release@main
         with:
           github-token: ${{ secrets.github-token }}
           release-config: '@th3-hero/semantic-release-maven'

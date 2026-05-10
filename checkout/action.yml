@@ -1,0 +1,11 @@
+name: Checkout
+description: Checkout the repository. Same as actions/checkout but with some default options set and allows specifying version in one place.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
+      with:
+        fetch-depth: 0
+        persist-credentials: false

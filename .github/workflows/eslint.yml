@@ -7,6 +7,10 @@ on:
         description: 'The Node.js version to use.'
         required: true
         type: string
+      package-manager:
+        description: 'The package manager to use (npm, yarn or pnpm).'
+        required: true
+        type: string
 
 jobs:
   lint:
@@ -14,16 +18,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
+        uses: Th3-Hero/github-workflows-and-actions/checkout@main
 
       - name: Setup Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # 6.4.0
+        uses: Th3-Hero/github-workflows-and-actions/default-setup-node@main
         with:
           node-version: ${{ inputs.node-version }}
-          cache: 'npm'
+          cache: ${{ inputs.package-manager }}
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Fail if unsupported package manager
+        if: ${{ inputs.package-manager != 'npm' && inputs.package-manager != 'yarn' && inputs.package-manager != 'pnpm' }}
+        run: |
+          echo "Unsupported package manager: ${{ inputs.package-manager }}"
+          exit 1
 
-      - name: Run tests
+      - name: Install dependencies (npm)
+        if: ${{ inputs.package-manager == 'npm' }}
+        run: npm ci
+
+      - name: Install dependencies (yarn)
+        if: ${{ inputs.package-manager == 'yarn' }}
+        run: yarn install --frozen-lockfile
+
+      - name: Install dependencies (pnpm)
+        if: ${{ inputs.package-manager == 'pnpm' }}
+        run: |
+          npm install -g pnpm
+          pnpm install --frozen-lockfile
+
+      - name: Run ESLint (npm)
+        if: ${{ inputs.package-manager == 'npm' }}
         run: npx eslint .
+
+      - name: Run ESLint (yarn)
+        if: ${{ inputs.package-manager == 'yarn' }}
+        run: yarn eslint .
+
+      - name: Run ESLint (pnpm)
+        if: ${{ inputs.package-manager == 'pnpm' }}
+        run: pnpm exec eslint .
